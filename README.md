@@ -1,4 +1,4 @@
-# ⬡ The Eclipse Prophecy — RPG
+# ⬡ The Eclipse Prophecy Codex— RPG
 
 An immersive AI-powered RPG running on **Groq** (llama-3.3-70b) with a **Cloudflare Pages** backend.
 

@@ -527,7 +527,7 @@ RULES:
       <div className="app">
         <div className="setup">
           <div className="setup-card">
-            <div className="logo">⬡ THE ECLIPSE PROPHECY ⬡</div>
+            <div className="logo">⬡ THE ECLIPSE PROPHECY CODEX ⬡</div>
             <div className="tagline">AN IMMERSIVE RPG ADVENTURE</div>
             <div className="story-hook">
               Three Eclipse Seals. An ancient god rising. A world on the brink of eternal night.

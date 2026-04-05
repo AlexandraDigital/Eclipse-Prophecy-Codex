@@ -240,6 +240,12 @@ html,body,#root{height:100%;overflow:hidden;}
   .sidebar{display:none;}
   .class-grid{grid-template-columns:repeat(2,1fr);}
 }
+.install-btn{width:100%;margin-top:10px;padding:10px;
+  background:rgba(201,168,76,.06);border:1px solid var(--gold2);border-radius:2px;
+  color:var(--gold2);font-family:'Share Tech Mono',monospace;font-size:.8rem;
+  letter-spacing:.15em;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.install-btn:hover{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold);box-shadow:0 0 18px rgba(201,168,76,.15);}
+.logo-img{display:block;margin:0 auto 14px;width:72px;height:72px;filter:drop-shadow(0 0 14px rgba(201,168,76,.45));}
 `;
 
 /* ─── CONSTANTS ─── */
@@ -296,8 +302,23 @@ export default function App(){
   const [suggestions,setSuggestions] = useState([]);
   const [speakingComp,setSpeakingComp] = useState(null);
   const [apiError,setApiError] = useState(null);
+  const [installPrompt,setInstallPrompt] = useState(null);
   const scrollRef  = useRef(null);
   const convRef    = useRef([]);
+
+
+  useEffect(()=>{
+    const handler=(e)=>{e.preventDefault();setInstallPrompt(e);};
+    window.addEventListener('beforeinstallprompt',handler);
+    return()=>window.removeEventListener('beforeinstallprompt',handler);
+  },[]);
+
+  async function handleInstall(){
+    if(!installPrompt)return;
+    installPrompt.prompt();
+    const{outcome}=await installPrompt.userChoice;
+    if(outcome==='accepted')setInstallPrompt(null);
+  }
 
   useEffect(()=>{
     scrollRef.current?.scrollTo({top:scrollRef.current.scrollHeight,behavior:"smooth"});
@@ -527,6 +548,7 @@ RULES:
       <div className="app">
         <div className="setup">
           <div className="setup-card">
+            <img src="/logo.svg" alt="Eclipse Prophecy Codex" className="logo-img"/>
             <div className="logo">⬡ THE ECLIPSE PROPHECY CODEX ⬡</div>
             <div className="tagline">AN IMMERSIVE RPG ADVENTURE</div>
             <div className="story-hook">
@@ -567,6 +589,11 @@ RULES:
             <button className="begin-btn" onClick={startGame} disabled={!charName.trim()}>
               BEGIN THE PROPHECY
             </button>
+            {installPrompt&&(
+              <button className="install-btn" onClick={handleInstall}>
+                ⬇ INSTALL APP
+              </button>
+            )}
           </div>
         </div>
       </div>

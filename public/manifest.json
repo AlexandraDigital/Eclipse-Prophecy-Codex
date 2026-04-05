@@ -1,0 +1,19 @@
+{
+  "name": "The Eclipse Prophecy Codex",
+  "short_name": "Eclipse Codex",
+  "description": "An immersive AI-powered RPG. Three Eclipse Seals. An ancient god rising. Stop Malachar before eternal night falls.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06080a",
+  "theme_color": "#c9a84c",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"]
+}

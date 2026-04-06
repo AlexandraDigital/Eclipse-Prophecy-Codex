@@ -84,9 +84,13 @@ html,body,#root{height:100%;overflow:hidden;}
   box-shadow:0 0 12px rgba(176,96,255,.5);animation:sealPulse 2s infinite;}
 @keyframes sealPulse{0%,100%{box-shadow:0 0 8px rgba(176,96,255,.4);}50%{box-shadow:0 0 20px rgba(176,96,255,.7);}}
 .seal-label{font-size:.62rem;color:#5a4a80;letter-spacing:.1em;}
-.new-btn{background:none;border:1px solid #1e2e1e;border-radius:2px;color:var(--dim);
+.new-btn,.save-btn,.load-btn{background:none;border:1px solid #1e2e1e;border-radius:2px;color:var(--dim);
   font-family:'Share Tech Mono',monospace;font-size:.68rem;padding:4px 9px;cursor:pointer;transition:all .15s;letter-spacing:.06em;}
 .new-btn:hover{border-color:var(--red);color:var(--red);}
+.save-btn{border-color:#2e2e1e;color:#5a5a3a;}
+.save-btn:hover{border-color:var(--gold2);color:var(--gold);}
+.load-btn{border-color:#1e2e3e;color:#3a5a6a;}
+.load-btn:hover{border-color:#6a9ab0;color:#8abacf;}
 
 .main{flex:1;display:flex;overflow:hidden;}
 
@@ -232,6 +236,10 @@ html,body,#root{height:100%;overflow:hidden;}
 .ov-btn:hover{box-shadow:0 0 20px rgba(201,168,76,.3);}
 .win-card{border-color:var(--pur2);}
 .win-title{color:var(--pur2) !important;text-shadow:0 0 30px rgba(176,96,255,.5) !important;}
+.saved-card{border-color:var(--gold);background:rgba(201,168,76,.1);animation:slideInDown .3s ease both;}
+@keyframes slideInDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:none;}}
+.saved-title{color:var(--gold);}
+.saved-sub{color:var(--gold2);}
 
 .error-banner{background:rgba(140,20,20,.2);border:1px solid #a03030;border-radius:2px;
   padding:8px 14px;font-size:.75rem;color:#e06060;letter-spacing:.05em;margin-bottom:12px;}
@@ -535,6 +543,33 @@ RULES:
   function handleKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}
   function resetGame(){setPhase("setup");setEntries([]);convRef.current=[];setSuggestions([]);setApiError(null);}
 
+  function saveGame(){
+    const save={charName,selClass,selRace,gs,entries,convRef:convRef.current,suggestions};
+    localStorage.setItem("eclipseSave",JSON.stringify(save));
+    setOverlay({type:"saved",data:{time:new Date().toLocaleTimeString()}});
+    setTimeout(()=>setOverlay(null),2000);
+  }
+
+  function loadGame(){
+    const saved=localStorage.getItem("eclipseSave");
+    if(!saved){alert("No saved game found.");return;}
+    try{
+      const data=JSON.parse(saved);
+      setCharName(data.charName);
+      setSelClass(data.selClass);
+      setSelRace(data.selRace);
+      setGs(data.gs);
+      setEntries(data.entries);
+      convRef.current=data.convRef;
+      setSuggestions(data.suggestions);
+      setPhase("game");
+    }catch{alert("Save file corrupted.");}
+  }
+
+  function hasSave(){
+    return localStorage.getItem("eclipseSave")!==null;
+  }
+
   const cls = CLASSES.find(c=>c.id===selClass)||CLASSES[0];
   const xpPrev = XP_LEVELS[gs.level-1]||0;
   const xpNext = XP_LEVELS[gs.level]||9999;
@@ -589,6 +624,11 @@ RULES:
             <button className="begin-btn" onClick={startGame} disabled={!charName.trim()}>
               BEGIN THE PROPHECY
             </button>
+            {hasSave()&&(
+              <button className="begin-btn" onClick={loadGame} style={{background:"linear-gradient(135deg,#1a3a2a,#2a6a4a,#1a3a2a)",borderColor:"#3a9a7a"}}>
+                📂 LOAD SAVED GAME
+              </button>
+            )}
             {installPrompt&&(
               <button className="install-btn" onClick={handleInstall}>
                 ⬇ INSTALL APP
@@ -635,6 +675,16 @@ RULES:
           </div>
         )}
 
+        {/* SAVED */}
+        {overlay?.type==="saved"&&(
+          <div className="overlay" style={{pointerEvents:"none"}}>
+            <div className="overlay-card saved-card" style={{maxWidth:280}}>
+              <div className="ov-title saved-title">✓ GAME SAVED</div>
+              <div className="saved-sub">{overlay.data.time}</div>
+            </div>
+          </div>
+        )}
+
         {/* VICTORY */}
         {overlay?.type==="win"&&(
           <div className="overlay">
@@ -668,7 +718,10 @@ RULES:
               </div>
             ))}
           </div>
-          <button className="new-btn" onClick={resetGame}>◀ NEW</button>
+          <div style={{display:"flex",gap:"6px",flexShrink:0}}>
+            <button className="save-btn" onClick={saveGame} title="Save your progress">💾 SAVE</button>
+            <button className="new-btn" onClick={resetGame}>⟲ NEW GAME</button>
+          </div>
         </div>
 
         <div className="main">
